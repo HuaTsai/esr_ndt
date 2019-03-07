@@ -1,0 +1,53 @@
+<launch>
+  <arg name="bag" default="20180721-1" />
+  <arg name="data_path" value="/home/ee904/Desktop/Dataset" />
+  <arg name="bagargs" if="$(eval bag == '20180721-1')" value="--clock
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_00.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_01.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_02.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_03.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_04.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_05.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_06.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_07.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_08.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_09.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_10.bag
+      $(arg data_path)/20180721-1/2018-07-21-10-58-34_11.bag" />
+  
+  <arg name="bagargs" if="$(eval bag == '20180721-2')" value="--clock
+      $(arg data_path)/20180721-2/2018-07-21-11-19-56_00.bag
+      $(arg data_path)/20180721-2/2018-07-21-11-19-56_01.bag
+      $(arg data_path)/20180721-2/2018-07-21-11-19-56_02.bag
+      $(arg data_path)/20180721-2/2018-07-21-11-19-56_03.bag
+      $(arg data_path)/20180721-2/2018-07-21-11-19-56_04.bag
+      $(arg data_path)/20180721-2/2018-07-21-11-19-56_05.bag" />
+
+  <arg name="bagargs" if="$(eval bag == '20180402-1')" value="--clock
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_00.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_01.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_02.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_03.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_04.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_05.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_06.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_07.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_08.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_09.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_10.bag
+      $(arg data_path)/20180402-1/2018-04-02-14-46-24_11.bag" />
+
+  <arg name="bagargs" if="$(eval bag == '20180402-3')" value="--clock
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_0.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_1.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_2.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_3.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_4.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_5.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_6.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_7.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_8.bag
+      $(arg data_path)/20180402-3/2018-04-02-15-21-36_9.bag" />
+      
+  <node pkg="rosbag" type="play" name="playbag" args="$(arg bagargs)" />
+</launch>

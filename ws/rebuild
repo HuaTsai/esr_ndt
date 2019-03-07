@@ -1,0 +1,5 @@
+#!/bin/bash
+cd $HOME/Desktop/HuaTsai/esr_ndt
+rm -r build
+rm -rf devel
+catkin_make -j8

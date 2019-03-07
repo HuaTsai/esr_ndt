@@ -1,0 +1,16 @@
+<launch>
+  <!-- <arg name="config_path" value="$(find ndt)/../config" /> -->
+
+  <!-- tf -->
+  <include file="$(find esr_ndt)/launch/tf.launch" />
+  
+  <!-- ndt -->
+  <node pkg="esr_ndt" type="node_main" name="node_main" output="screen">
+    <param name="map_path" value="/home/ee904/Desktop/HuaTsai/esr/varify/20180721-1/world0.pcd" />
+  </node>
+
+  <!-- rviz -->
+  <node pkg="rviz" type="rviz" name="rviz"
+      args="-d $(find esr_ndt)/rviz/esr.rviz" />
+
+</launch>

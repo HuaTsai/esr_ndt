@@ -1,0 +1,24 @@
+<launch>
+  <param name="/use_sim_time" value="true" />
+
+  <!-- tf -->
+  <include file="$(find esr_ndt)/launch/tf.launch" />
+
+  <!-- vins mono -->
+  <include file="$(find vins_estimator)/launch/euroc.launch" />
+
+  <!-- ego motion -->
+  <node pkg="radar_ego_motion" type="esr_ego_motion" name="esr_ego_motion" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="velodyne_to_radarmap"
+      args="0 0 0 0 0 0 /velodyne /radar_map" />
+
+  <!-- rviz -->
+  <node pkg="rviz" type="rviz" name="rviz"
+      args="-d $(find esr_ndt)/rviz/esr.rviz" />
+
+  <!-- play bag -->
+  <include file="$(find esr_ndt)/launch/playbag.launch">
+    <arg name="bag" value="20180721-1" />
+    <!-- <arg name="bag" value="20180402-1" /> -->
+  </include>
+</launch>

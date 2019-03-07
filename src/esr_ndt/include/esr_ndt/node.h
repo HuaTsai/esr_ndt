@@ -40,7 +40,7 @@ class Node {
   void LoadMap();
   sensor_msgs::PointCloud2 AugmentPredictPointCloud(
       const std::deque<sensor_msgs::PointCloud2> &pcs,
-      const ros::Time &time);
+      const geometry_msgs::PoseStamped &predict_poset_msg);
   sensor_msgs::PointCloud2 AugmentPointCloud(
       const std::deque<sensor_msgs::PointCloud2> &pcs,
       const ros::Time &time);

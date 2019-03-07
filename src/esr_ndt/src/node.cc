@@ -79,7 +79,7 @@ void Node::OdometryCallback(const nav_msgs::Odometry &msg) {
   pose_extrapolator_->AddPoseStamped(ndt_poset_msg);
   ndt_pose_publisher_.publish(ndt_poset_msg);
 
-  ndt_path_.push_back(ndt_poset_msg);
+  ndt_path_.poses.push_back(ndt_poset_msg);
   ndt_path_.header.stamp = time;
   ndt_path_.header.frame_id = "map";
   ndt_path_publisher_.publish(ndt_path_);
@@ -127,7 +127,7 @@ void Node::LoadMap() {
   ndt_.setInputTarget(map);
 }
 
-sensor_msgs::PointCloud2 AugmentPredictPointCloud(
+sensor_msgs::PointCloud2 Node::AugmentPredictPointCloud(
       const std::deque<sensor_msgs::PointCloud2> &pcs,
       const geometry_msgs::PoseStamped &predict_poset_msg) {
   sensor_msgs::PointCloud2 ret;
@@ -181,7 +181,7 @@ sensor_msgs::PointCloud2 AugmentPredictPointCloud(
   return ret;
 }
 
-sensor_msgs::PointCloud2 AugmentPointCloud(
+sensor_msgs::PointCloud2 Node::AugmentPointCloud(
     const std::deque<sensor_msgs::PointCloud2> &pcs,
     const ros::Time &time) {
   // time should always be lateset sended pose time

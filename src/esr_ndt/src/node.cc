@@ -36,6 +36,8 @@ Node::Node(const std::shared_ptr<ros::NodeHandle> &nh,
 
   pose_extrapolator_ =
       PoseExtrapolator::InitializeWithPoseStamped(initialpose_);
+  ndt_poset_msg_ = initialpose_;
+  pose_queue_.push_back(ndt_poset_msg_);
   ROS_INFO("Initialize Done");
 }
 
@@ -44,7 +46,7 @@ void Node::OdometryCallback(const nav_msgs::Odometry &msg) {
   pose_extrapolator_->AddOdometryMsg(msg);
   auto predict_poset_msg = pose_extrapolator_->ExtrapolatePoseStamped(time);
   auto pcs = esr_queue_;
-  auto predict_pc = AugmentPredictPointCloud(pcs, time);
+  auto predict_pc = AugmentPredictPointCloud(pcs, predict_poset_msg);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr src(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr out(new pcl::PointCloud<pcl::PointXYZ>);
@@ -73,11 +75,16 @@ void Node::OdometryCallback(const nav_msgs::Odometry &msg) {
   odom_to_map_msg.child_frame_id = "odom";
   tfb_->sendTransform(odom_to_map_msg);
 
-  auto update_pc = AugmentPointCloud(pcs, time);
+  // auto update_pc = AugmentPointCloud(pcs, time);
+  auto update_pc = AugmentPredictPointCloud(pcs, ndt_poset_msg);
   esr_pc_publisher_.publish(update_pc);
 
   pose_extrapolator_->AddPoseStamped(ndt_poset_msg);
   ndt_pose_publisher_.publish(ndt_poset_msg);
+  pose_queue_.push_back(ndt_poset_msg);
+  if (pose_queue_.size() > 20) {
+    pose_queue_.pop_front();
+  }
 
   ndt_path_.poses.push_back(ndt_poset_msg);
   ndt_path_.header.stamp = time;
@@ -96,7 +103,8 @@ void Node::PointCloudCallback(const sensor_msgs::PointCloud2 &msg) {
   sensor_msgs::PointCloud2 msg2;
   localizer_to_base_link_.header.stamp = msg.header.stamp;
   tf2::doTransform(msg, msg2, localizer_to_base_link_);
-  while (esr_queue_.size() > 33) {
+  esr_queue_.push_back(msg2);
+  while (esr_queue_.size() > 40) {
     esr_queue_.pop_front();
   }
 }
@@ -127,6 +135,11 @@ void Node::LoadMap() {
   ndt_.setInputTarget(map);
 }
 
+// sensor_msgs::PointCloud2 Node::AugmentPredictPointCloud(
+//       const std::deque<sensor_msgs::PointCloud2> &pcs,
+//       const geometry_msgs::PoseStamped &predict_poset_msg) {
+
+// }
 sensor_msgs::PointCloud2 Node::AugmentPredictPointCloud(
       const std::deque<sensor_msgs::PointCloud2> &pcs,
       const geometry_msgs::PoseStamped &predict_poset_msg) {
@@ -148,15 +161,35 @@ sensor_msgs::PointCloud2 Node::AugmentPredictPointCloud(
   latest_to_predict_msg.header.frame_id = "base_link";
 
   int i = 0;
+  ROS_INFO("enter predict pc while size: %ld", pcs.size());
+  ROS_INFO("latest_time %f", latest_time.toSec());
+  ROS_INFO("predict_time %f", predict_time.toSec());
   for (const auto &pc : pcs) {
     sensor_msgs::PointCloud2 tmp;
-    if (pc.header.stamp <= latest_time) {
-      tf_buffer_.transform(pc, tmp, "base_link", latest_time, "map");
-      tf2::doTransform(tmp, tmp, latest_to_predict_msg);
-      pcl::concatenatePointCloud(ret, tmp, ret);
-    } else if (pc.header.stamp <= predict_time) {
-      auto inter_pose_msg = PoseInterpolate(
-          latest_poset_msg, predict_poset_msg, pc.header.stamp);
+    ros::Time time = pc.header.stamp;
+    ROS_INFO("pc time: %f", time.toSec());
+    if (time > pose_queue_.back().header.stamp) {
+      break;
+    }
+    const auto end = std::lower_bound(
+      pose_queue_.begin(), pose_queue_.end(), time,
+      [](const geometry_msgs::PoseStamped &a, const ros::Time &b) {
+        return a.header.stamp < b;
+      });
+    geometry_msgs::Pose inter_pose_msg;
+    if (end->header.stamp == time) {
+      inter_pose_msg = end->pose;
+    } else {
+      const auto start = std::prev(end);
+      inter_pose_msg = PoseInterpolate(*start, *end, time);
+    }
+    // if (pc.header.stamp <= latest_time) {
+    //   tf_buffer_.transform(pc, tmp, "base_link", latest_time, "map");
+    //   tf2::doTransform(tmp, tmp, latest_to_predict_msg);
+    //   pcl::concatenatePointCloud(ret, tmp, ret);
+    // } else if (pc.header.stamp <= predict_time) {
+    //   auto inter_pose_msg = PoseInterpolate(
+    //       latest_poset_msg, predict_poset_msg, pc.header.stamp);
 
       tf2::Transform inter_to_predict;
       tf2::Transform predict_to_map;
@@ -172,10 +205,11 @@ sensor_msgs::PointCloud2 Node::AugmentPredictPointCloud(
 
       tf2::doTransform(pc, tmp, inter_to_predict_msg);
       pcl::concatenatePointCloud(ret, tmp, ret);
-    } else {
-      ROS_INFO("hello?");
-    }
+    // } else {
+    //   ++i;
+    // }
   }
+  ROS_INFO("extrapolate: %d", i);
   ret.header.frame_id = "base_link";
   ret.header.stamp = predict_time;
   return ret;
@@ -187,6 +221,8 @@ sensor_msgs::PointCloud2 Node::AugmentPointCloud(
   // time should always be lateset sended pose time
   sensor_msgs::PointCloud2 ret;
   int i = 0;
+  ROS_INFO("enter update pc while size: %ld", pcs.size());
+  ROS_INFO("want to lookup at time %f", time.toSec());
   for (const auto &pc : pcs) {
     sensor_msgs::PointCloud2 tmp;
     try {

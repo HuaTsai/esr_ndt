@@ -79,6 +79,7 @@ class Node {
 
   // queue ?
   std::deque<sensor_msgs::PointCloud2> esr_queue_;
+  std::deque<geometry_msgs::PoseStamped> pose_queue_;
 };
 }  // namespace esr_ndt
 

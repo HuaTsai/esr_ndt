@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ $# -ne 1 ]
+then
+  echo "Usage: $0 <launch_name>"
+  exit $E_BADARGS
+fi
+source $HOME/Desktop/HuaTsai/esr_ndt/devel/setup.bash
+roslaunch $HOME/Desktop/HuaTsai/esr_ndt/src/esr_ndt/launch/$1.launch

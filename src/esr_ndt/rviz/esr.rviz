@@ -62,24 +62,20 @@ Visualization Manager:
         All Enabled: false
         base_link:
           Value: true
-        body:
-          Value: true
-        camera:
-          Value: true
         esr_can0_frame:
-          Value: true
+          Value: false
         esr_can1_frame:
-          Value: true
+          Value: false
         esr_can2_frame:
-          Value: true
+          Value: false
         imu:
-          Value: true
+          Value: false
         map:
           Value: true
         odom:
           Value: true
         radar_map:
-          Value: true
+          Value: false
         velodyne:
           Value: false
         world:
@@ -90,19 +86,22 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        odom:
-          base_link:
-            imu:
-              {}
-            velodyne:
-              esr_can0_frame:
+        map:
+          odom:
+            base_link:
+              imu:
                 {}
-              esr_can1_frame:
-                {}
-              esr_can2_frame:
-                {}
-              radar_map:
-                {}
+              velodyne:
+                esr_can0_frame:
+                  {}
+                esr_can1_frame:
+                  {}
+                esr_can2_frame:
+                  {}
+                radar_map:
+                  {}
+          world:
+            {}
       Update Interval: 0
       Value: true
     - Class: rviz/Group
@@ -444,7 +443,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: odom
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -465,25 +464,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 43.4409065246582
+      Distance: 47.262672424316406
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.120573043823242
-        Y: 4.3326263427734375
+        X: -1.7261581420898438
+        Y: 1.758314609527588
         Z: 0
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.36479687690734863
+      Pitch: 1.1947963237762451
       Target Frame: base_link
       Value: ThirdPersonFollower (rviz)
-      Yaw: 3.095397710800171
+      Yaw: 3.1403987407684326
     Saved: ~
 Window Geometry:
   Displays:

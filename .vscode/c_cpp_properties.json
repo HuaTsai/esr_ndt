@@ -1,19 +1,22 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/src/esr_ndt/include",
+                "/home/ee904/Desktop/HuaTsai/esr_ndt/devel/include",
                 "/opt/ros/melodic/include",
-                "/usr/include/pcl-1.8",
-                "/usr/include/eigen3"
+                "/home/ee904/Desktop/HuaTsai/esr_ndt/src/esr_ndt/include",
+                "/usr/include"
             ],
-            "defines": [],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "configurationProvider": "b2.catkin_tools"
         }
     ],
     "version": 4

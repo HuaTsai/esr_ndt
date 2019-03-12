@@ -1,0 +1,2 @@
+#!/bin/bash
+rosbag record /esr_can0_tracks /esr_can1_tracks /esr_can2_tracks /esr_static_obj_pc /vins_estimator/odometry /tf /tf_static

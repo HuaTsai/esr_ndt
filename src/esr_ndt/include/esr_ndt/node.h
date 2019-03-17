@@ -15,8 +15,10 @@
 
 #include <pcl/registration/ndt.h>
 #include <pcl_ros/point_cloud.h>
+
 #include <deque>
 #include <memory>
+#include <string>
 #include "esr_ndt/pose_extrapolator.h"
 
 namespace esr_ndt {
@@ -27,26 +29,26 @@ class Node {
   Node(const Node &) = delete;
   Node &operator=(const Node &) = delete;
 
-  // private ?
+ private:
   void OdometryCallback(const nav_msgs::Odometry &msg);
   void ImuCallback(const sensor_msgs::Imu &msg);
   void PointCloudCallback(const sensor_msgs::PointCloud2 &msg);
   void InitialPoseCallback(
-     const geometry_msgs::PoseWithCovarianceStamped &msg);
-
- private:
-  // functions
+      const geometry_msgs::PoseWithCovarianceStamped &msg);
   void HandleTopics();
   void LoadMap();
-  sensor_msgs::PointCloud2 AugmentPredictPointCloud(
-      const std::deque<sensor_msgs::PointCloud2> &pcs,
-      const geometry_msgs::PoseStamped &predict_poset_msg);
+  void SetupTransformBroadcaster();
+  void InitializePose();
+  void SendTransformBeforeRun();
   sensor_msgs::PointCloud2 AugmentPointCloud(
       const std::deque<sensor_msgs::PointCloud2> &pcs,
-      const ros::Time &time);
+      const geometry_msgs::PoseStamped &predict_poset_msg);
   geometry_msgs::Pose PoseInterpolate(
       const geometry_msgs::PoseStamped &p1,
       const geometry_msgs::PoseStamped &p2, const ros::Time &time);
+  geometry_msgs::TransformStamped ToTransformStampedMsg(
+      const tf2::Transform &tf, const ros::Time &time,
+      const std::string &frame, const std::string &child_frame = "");
   Eigen::Matrix4f PoseMsgToMatrix4f(const geometry_msgs::Pose &msg);
   geometry_msgs::Pose Matrix4fToPoseMsg(const Eigen::Matrix4f &mtx);
 
@@ -64,6 +66,7 @@ class Node {
   tf2_ros::Buffer tf_buffer_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tfb_;
   geometry_msgs::TransformStamped localizer_to_base_link_;
+  geometry_msgs::TransformStamped imu_to_base_link_;
 
   // messages
   geometry_msgs::PoseStamped initialpose_;
@@ -80,6 +83,9 @@ class Node {
   // queue ?
   std::deque<sensor_msgs::PointCloud2> esr_queue_;
   std::deque<geometry_msgs::PoseStamped> pose_queue_;
+
+  // run flag
+  bool is_run_;
 };
 }  // namespace esr_ndt
 

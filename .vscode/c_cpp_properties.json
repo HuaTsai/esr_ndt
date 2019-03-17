@@ -9,14 +9,15 @@
                 "/home/ee904/Desktop/HuaTsai/esr_ndt/devel/include",
                 "/opt/ros/melodic/include",
                 "/home/ee904/Desktop/HuaTsai/esr_ndt/src/esr_ndt/include",
-                "/usr/include"
+                "/usr/include",
+                "/usr/include/pcl-1.8",
+                "/usr/include/eigen3"
             ],
             "name": "Linux",
             "intelliSenseMode": "gcc-x64",
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
-            "cppStandard": "c++17",
-            "configurationProvider": "b2.catkin_tools"
+            "cppStandard": "c++17"
         }
     ],
     "version": 4

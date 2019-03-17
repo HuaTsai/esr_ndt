@@ -17,8 +17,8 @@
       args="-d $(find esr_ndt)/rviz/esr.rviz" />
 
   <!-- play bag -->
-  <!-- <include file="$(find esr_ndt)/launch/playbag.launch"> -->
-    <!-- <arg name="bag" value="20180721-1" /> -->
+  <include file="$(find esr_ndt)/launch/playbag.launch">
+    <arg name="bag" value="20180721-1" />
     <!-- <arg name="bag" value="20180402-1" /> -->
-  <!-- </include> -->
+  </include>
 </launch>

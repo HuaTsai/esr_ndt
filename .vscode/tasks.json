@@ -20,6 +20,16 @@
             "label": "vio & ego motion",
             "type": "shell",
             "command": ".vscode/scripts/run vio_ego"
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": ".vscode/scripts/run run"
+        },
+        {
+            "label": "map_build",
+            "type": "shell",
+            "command": ".vscode/scripts/run map_build"
         }
     ]
 }

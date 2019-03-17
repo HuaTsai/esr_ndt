@@ -1,0 +1,13 @@
+/* Copyright 2019 HuaTsai */
+#ifndef ESR_NDT_COMMON_H_
+#define ESR_NDT_COMMON_H_
+#include <ros/ros.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+namespace esr_ndt {
+geometry_msgs::Pose PoseInterpolate(
+      const geometry_msgs::PoseStamped &p1,
+      const geometry_msgs::PoseStamped &p2, const ros::Time &time);
+}  // namespace esr_ndt
+
+#endif  // ESR_NDT_COMMON_H_

@@ -5,3 +5,7 @@ logs/
 src/CMakeLists.txt
 *.bag
 *.pcd
+
+*.out
+*.aux
+*.log

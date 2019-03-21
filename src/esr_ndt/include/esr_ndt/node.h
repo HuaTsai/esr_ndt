@@ -43,6 +43,8 @@ class Node {
   sensor_msgs::PointCloud2 AugmentPointCloud(
       const std::deque<sensor_msgs::PointCloud2> &pcs,
       const geometry_msgs::PoseStamped &predict_poset_msg);
+  geometry_msgs::Pose QueuePoseInterpolate(
+      const ros::Time &time);
   geometry_msgs::Pose PoseInterpolate(
       const geometry_msgs::PoseStamped &p1,
       const geometry_msgs::PoseStamped &p2, const ros::Time &time);

@@ -1,0 +1,3 @@
+#!/bin/bash
+cd src/esr_ndt/doc
+pdflatex report.tex

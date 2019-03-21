@@ -1,5 +1,0 @@
-helper
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/helper/share/helper/cmake/helperConfig.cmake /home/ee904/Desktop/HuaTsai/esr_ndt/devel/share/helper/cmake/helperConfig.cmake
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/helper/share/helper/cmake/helperConfig-version.cmake /home/ee904/Desktop/HuaTsai/esr_ndt/devel/share/helper/cmake/helperConfig-version.cmake
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/helper/lib/pkgconfig/helper.pc /home/ee904/Desktop/HuaTsai/esr_ndt/devel/lib/pkgconfig/helper.pc
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/helper/lib/helper/map_build /home/ee904/Desktop/HuaTsai/esr_ndt/devel/lib/helper/map_build

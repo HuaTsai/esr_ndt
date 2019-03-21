@@ -1,0 +1,35 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{cases}
+\usepackage{graphicx}
+\usepackage{pifont}
+\usepackage[hidelinks]{hyperref}
+\lstset{basicstyle=\ttfamily,
+  showstringspaces=false,
+  commentstyle=\color{red},
+  keywordstyle=\color{blue}
+}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\DeclareMathOperator{\B}{\mathbf{B}}
+\DeclareMathOperator{\C}{\mathbf{C}}
+\DeclareMathOperator{\A}{\mathbf{A}}
+\DeclareMathOperator{\T}{\mathbf{T}}
+\DeclareMathOperator{\D}{\Delta}
+\DeclareMathOperator{\al}{\mathbf{\alpha}}
+\DeclareMathOperator{\Th}{\mathbf{\theta}}
+ 
+\title{Autoware Matching}
+\author{Shao Hua, Huang}
+
+\begin{document}
+\maketitle
+\begin{align*}
+^{odom}\T_{base\_link} & = ^{base\_link, t0}\T_{base\_link, tx}\\
+                      & = ^{base\_link, t0}\T_{imu, t0} * ^{imu, t0}\T_{imu, tx} * ^{imu, tx}\T_{base\_link, tx}\\
+                      & = ^{base\_link}T_{imu} * ^{world}\T_{body} * ^{base\_link}T_{imu}^{-1}
+\end{align*}
+\end{document}

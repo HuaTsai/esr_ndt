@@ -1,6 +1,0 @@
-esr_ndt
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/esr_ndt/share/esr_ndt/cmake/esr_ndtConfig.cmake /home/ee904/Desktop/HuaTsai/esr_ndt/devel/share/esr_ndt/cmake/esr_ndtConfig.cmake
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/esr_ndt/share/esr_ndt/cmake/esr_ndtConfig-version.cmake /home/ee904/Desktop/HuaTsai/esr_ndt/devel/share/esr_ndt/cmake/esr_ndtConfig-version.cmake
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/esr_ndt/lib/libesr_ndt.so /home/ee904/Desktop/HuaTsai/esr_ndt/devel/lib/libesr_ndt.so
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/esr_ndt/lib/pkgconfig/esr_ndt.pc /home/ee904/Desktop/HuaTsai/esr_ndt/devel/lib/pkgconfig/esr_ndt.pc
-/home/ee904/Desktop/HuaTsai/esr_ndt/devel/.private/esr_ndt/lib/esr_ndt/node_main /home/ee904/Desktop/HuaTsai/esr_ndt/devel/lib/esr_ndt/node_main

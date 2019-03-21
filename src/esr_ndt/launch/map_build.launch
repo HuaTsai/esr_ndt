@@ -9,7 +9,7 @@
   <node pkg="tf2_ros" type="static_transform_publisher" name="velodyne_to_radarmap"
       args="0 0 0 0 0 0 /velodyne /radar_map" />
 
-  <!-- map build -->
+  <!-- map build: rosparam set saveaugpc true -->
   <node pkg="helper" type="map_build" name="map_build" output="screen" />
 
   <!-- rviz -->

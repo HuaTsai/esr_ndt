@@ -156,7 +156,7 @@ void calcMotion(int can_num) {
     }
 
     //Beta matrix
-    double beta = tf_rpy[can_num].z + 4.2;
+    double beta = tf_rpy[can_num].z - 2.15;
     beta_mat.resize(2, 2);
     beta_mat(0, 0) = cos(beta);
     beta_mat(0, 1) = sin(beta);
@@ -303,7 +303,7 @@ void calcMotion(int can_num) {
         marker.lifetime = ros::Duration(0.1); // 0.5 seconds
         marker.pose.position.x = sensor_data[can_num][j].range * std::cos(r + tf_rpy[can_num].z);
         marker.pose.position.y = sensor_data[can_num][j].range * std::sin(r + tf_rpy[can_num].z);
-        marker.pose.position.z = 0.0;
+        marker.pose.position.z = tf_vector[can_num].z;
         marker.pose.orientation.x = 0.0;
         marker.pose.orientation.y = 0.0;
         marker.pose.orientation.z = 0.0;
@@ -429,9 +429,9 @@ void ImuCallback(const sensor_msgs::Imu::ConstPtr &input) {
     last_ego_mat(2, 0) += input->linear_acceleration.y * dt;
 
     imu_previous_time = current_time;
-    cout << "Ego-Motion" << endl;
-    cout << "w: " << last_ego_mat(0, 0) << "    vx: " << last_ego_mat(1, 0) << "     vy: " << last_ego_mat(2, 0) << endl;
-    cout << endl;
+    // cout << "Ego-Motion" << endl;
+    // cout << "w: " << last_ego_mat(0, 0) << "    vx: " << last_ego_mat(1, 0) << "     vy: " << last_ego_mat(2, 0) << endl;
+    // cout << endl;
 }
 
 void tfCallback(const  tf2_msgs::TFMessage& m)

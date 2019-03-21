@@ -39,10 +39,3 @@
   * `geometry_msgs::TransformStamped`            <-    `tf2::Stamped<tf2::Transform>`
   * `geometry_msgs::WrenchStamped`               <-    `geometry_msgs::WrenchStamped`
   * `geometry_msgs::WrenchStamped`               <-    `tf2::Stamped<boost::array<tf2::Vector3, 2>>`
-
-* `tf2::transformTF2ToMsg()`: cannot use
-  * `tf2::Transform`, msg
-  * `tf2::Quaternion`, `tf2::Vector3`, msg
-  * `tf2::Transform`, msg, `ros::Time`, `frame`, `child_frame`
-  * `tf2::Quaternion`, `tf2::Vector3`, msg, `ros::Time`, `frame`, `child_frame`
-

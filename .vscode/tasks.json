@@ -17,19 +17,33 @@
             }
         },
         {
-            "label": "vio & ego motion",
+            "label": "clean",
             "type": "shell",
-            "command": ".vscode/scripts/run vio_ego"
+            "command": "catkin clean -y",
+            "problemMatcher": []
         },
         {
-            "label": "run",
+            "label": "launch",
             "type": "shell",
-            "command": ".vscode/scripts/run run"
+            "command": ".vscode/scripts/run ${input:launch}",
+            "problemMatcher": [
+                "$catkin-gcc"
+            ]
         },
         {
-            "label": "map_build",
+            "label": "tex",
             "type": "shell",
-            "command": ".vscode/scripts/run map_build"
+            "command": ".vscode/scripts/tex",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "launch",
+            "default": "run",
+            "type": "pickString",
+            "description": "launch name",
+            "options": ["run", "vio_ego", "map_build", "tf_test"]
         }
     ]
 }

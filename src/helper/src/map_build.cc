@@ -61,7 +61,7 @@ void save(const std::shared_ptr<ros::NodeHandle> &nh) {
         tf2::doTransform(elem, elem, trs);
         pcl::concatenatePointCloud(augpc, elem, augpc);
       }
-      pcl::io::savePCDFile("/home/ee904/Desktop/HuaTsai/esr_ndt/world00.pcd",
+      pcl::io::savePCDFile("/home/ee904/Desktop/HuaTsai/esr_ndt/data/map.pcd",
                            augpc);
       ROS_INFO("Save world.pcd success!");
     }

@@ -5,9 +5,21 @@
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
 #include <boost/bind.hpp>
 #include <thread>
+#include <chrono>
 #include "esr_ndt/node.h"
 
 namespace esr_ndt {
+namespace {
+  void ShowXYZRPY(const geometry_msgs::Pose &p, const std::string &s) {
+    tf2::Transform t;
+    tf2::convert(p, t);
+    double roll, pitch, yaw;
+    t.getBasis().getRPY(roll, pitch, yaw);
+    ROS_INFO("%s: %f %f %f %f %f %f", s.c_str(),
+             p.position.x, p.position.y, p.position.z,
+             roll, pitch, yaw);
+  }
+}
 
 Node::Node(const std::shared_ptr<ros::NodeHandle> &nh,
            const std::shared_ptr<ros::NodeHandle> &private_nh)
@@ -24,19 +36,36 @@ Node::Node(const std::shared_ptr<ros::NodeHandle> &nh,
 void Node::OdometryCallback(const nav_msgs::Odometry &msg) {
   is_run_ = true;
   auto time = msg.header.stamp;
-  auto tmppp = msg;
-  tmppp.pose.pose.position.x -= 1.131;
-  tmppp.pose.pose.position.y += 0.101;
-  tmppp.pose.pose.position.z -= 2.550;
-  pose_extrapolator_->AddOdometryMsg(tmppp);
-  // pose_extrapolator_->AddOdometryMsg(msg);
+
+  // generate base_link_to_odom and base_link_to_odom_msg
+  tf2::Transform base_link_to_odom;
+  tf2::Transform imu_to_base_link;
+  tf2::Transform imux_to_imu0;
+  tf2::convert(imu_to_base_link_.transform, imu_to_base_link);
+  tf2::convert(msg.pose.pose, imux_to_imu0);
+  base_link_to_odom =
+      imu_to_base_link * imux_to_imu0 * imu_to_base_link.inverse();
+  nav_msgs::Odometry base_link_to_odom_msg;
+  base_link_to_odom_msg.header.stamp = time;
+  base_link_to_odom_msg.header.frame_id = "odom";
+  base_link_to_odom_msg.child_frame_id = "base_link";
+  tf2::toMsg(base_link_to_odom, base_link_to_odom_msg.pose.pose);
+
+  // add odom to extrapolator
+  pose_extrapolator_->AddOdometryMsg(base_link_to_odom_msg);
+  // ShowXYZRPY(base_link_to_odom_msg.pose.pose, "odom");
+  // ShowXYZRPY(msg.Ppose.pose, "odom");
 
   // predict pc
   auto predict_poset_msg = pose_extrapolator_->ExtrapolatePoseStamped(time);
   auto pcs = esr_queue_;
   auto predict_pc = AugmentPointCloud(pcs, predict_poset_msg);
+  esr_pc_publisher_.publish(predict_pc);
+  // ROS_INFO_STREAM("predict: " << predict_poset_msg.pose.position);
+  // ShowXYZRPY(predict_poset_msg.pose, "predict");
 
   // ndt TODO(HuaTsai): align shall not be here, create thread in future
+  auto start = std::chrono::system_clock::now();
   pcl::PointCloud<pcl::PointXYZ>::Ptr src(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr out(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg(predict_pc, *src);
@@ -47,16 +76,17 @@ void Node::OdometryCallback(const nav_msgs::Odometry &msg) {
   ndt_poset_msg.header.frame_id = "map";
   ndt_poset_msg.header.stamp = time;
   ndt_poset_msg.pose = Matrix4fToPoseMsg(ndt_.getFinalTransformation());
-  // ndt_poset_msg.pose = predict_poset_msg.pose;
+  auto end = std::chrono::system_clock::now();
+  auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(
+      end - start).count();
+  // ndt_poset_msg = predict_poset_msg;  for debug
+  // ShowXYZRPY(ndt_poset_msg.pose, "update ");
 
+  // ndt result: base_link_to_map, odom_to_map
   tf2::Transform base_link_to_map;
-  tf2::Transform imu_to_base_link;
-  tf2::Transform imu_to_odom;
   tf2::Transform odom_to_map;
   tf2::convert(ndt_poset_msg.pose, base_link_to_map);
-  tf2::convert(imu_to_base_link_.transform, imu_to_base_link);
-  tf2::convert(msg.pose.pose, imu_to_odom);
-  odom_to_map = base_link_to_map * imu_to_base_link * imu_to_odom.inverse();
+  odom_to_map = base_link_to_map * base_link_to_odom.inverse();
 
   geometry_msgs::TransformStamped odom_to_map_msg;
   tf2::convert(odom_to_map, odom_to_map_msg.transform);
@@ -65,17 +95,9 @@ void Node::OdometryCallback(const nav_msgs::Odometry &msg) {
   odom_to_map_msg.child_frame_id = "odom";
   tfb_->sendTransform(odom_to_map_msg);
 
-  // geometry_msgs::TransformStamped base_link_to_map_msg;
-  // tf2::convert(base_link_to_map, base_link_to_map_msg.transform);
-  // base_link_to_map_msg.header.stamp = msg.header.stamp;
-  // base_link_to_map_msg.header.frame_id = "map";
-  // base_link_to_map_msg.child_frame_id = "base_link";
-  // ROS_INFO_STREAM(base_link_to_map_msg);
-  // tfb_->sendTransform(base_link_to_map_msg);
-
-  // auto update_pc = AugmentPointCloud(pcs, time);
-  auto update_pc = AugmentPointCloud(pcs, ndt_poset_msg);
-  esr_pc_publisher_.publish(update_pc);
+  // update pc
+  // auto update_pc = AugmentPointCloud(pcs, ndt_poset_msg);
+  // esr_pc_publisher_.publish(update_pc);
 
   pose_extrapolator_->AddPoseStamped(ndt_poset_msg);
   ndt_pose_publisher_.publish(ndt_poset_msg);
@@ -101,6 +123,7 @@ void Node::PointCloudCallback(const sensor_msgs::PointCloud2 &msg) {
   sensor_msgs::PointCloud2 msg2;
   localizer_to_base_link_.header.stamp = msg.header.stamp;
   tf2::doTransform(msg, msg2, localizer_to_base_link_);
+  // esr_pc_publisher_.publish(msg2);
   esr_queue_.push_back(msg2);
   while (esr_queue_.size() > 40) {
     esr_queue_.pop_front();
@@ -191,17 +214,7 @@ sensor_msgs::PointCloud2 Node::AugmentPointCloud(
     geometry_msgs::Pose inter_pose_msg;
     if (time <= pose_queue_.back().header.stamp) {
       ++i;
-      const auto end = std::lower_bound(
-        pose_queue_.begin(), pose_queue_.end(), time,
-        [](const geometry_msgs::PoseStamped &a, const ros::Time &b) {
-          return a.header.stamp < b;
-        });
-      if (end->header.stamp == time) {
-        inter_pose_msg = end->pose;
-      } else {
-        const auto start = std::prev(end);
-        inter_pose_msg = PoseInterpolate(*start, *end, time);
-      }
+      inter_pose_msg = QueuePoseInterpolate(time);
     } else if (time <= predict_time) {
       ++j;
       inter_pose_msg = PoseInterpolate(pose_queue_.back(),
@@ -225,9 +238,26 @@ sensor_msgs::PointCloud2 Node::AugmentPointCloud(
     tf2::doTransform(pc, tmp, inter_to_predict_msg);
     pcl::concatenatePointCloud(ret, tmp, ret);
   }
-  ROS_INFO("known: %d, pre: %d, extrapolate: %d", i, j, k);
+  // ROS_INFO("known: %d, pre: %d, extrapolate: %d", i, j, k);
   ret.header.frame_id = "base_link";
   ret.header.stamp = predict_time;
+  return ret;
+}
+
+geometry_msgs::Pose Node::QueuePoseInterpolate(
+      const ros::Time &time) {
+  geometry_msgs::Pose ret;
+  const auto end = std::lower_bound(
+       pose_queue_.begin(), pose_queue_.end(), time,
+      [](const geometry_msgs::PoseStamped &a, const ros::Time &b) {
+        return a.header.stamp < b;
+      });
+  if (end->header.stamp == time) {
+    ret = end->pose;
+  } else {
+    const auto start = std::prev(end);
+    ret = PoseInterpolate(*start, *end, time);
+  }
   return ret;
 }
 

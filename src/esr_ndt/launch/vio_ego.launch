@@ -3,6 +3,7 @@
 
   <!-- tf -->
   <include file="$(find esr_ndt)/launch/tf.launch" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 /map /odom" />
 
   <!-- vins mono -->
   <include file="$(find vins_estimator)/launch/euroc.launch" />
@@ -19,6 +20,5 @@
   <!-- play bag -->
   <include file="$(find esr_ndt)/launch/playbag.launch">
     <arg name="bag" value="20180721-1" />
-    <!-- <arg name="bag" value="20180402-1" /> -->
   </include>
 </launch>
